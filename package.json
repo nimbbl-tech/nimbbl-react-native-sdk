@@ -1,0 +1,68 @@
+{
+  "name": "nimbbl_react_native_sdk",
+  "version": "1.0.0",
+  "description": "A simple react native checkout integration package.",
+  "author": "Bigital Technologies",
+  "license": "ISC",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "react": "18.2.0",
+    "react-native": "0.71.7",
+    "build": "bob build && npm pack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/nimbbl-tech/nimbbl_react_native_sdk"
+  },
+  "keywords": [
+    "nimbbl",
+    "sdk"
+  ],
+  "bugs": {
+    "url": "https://bitbucket.org/nimbbl-tech/nimbbl_react_native_sdk/issues"
+  },
+  "homepage": "https://bitbucket.org/nimbbl-tech/nimbbl_react_native_sdk#readme",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-webview": "*"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
+    "@types/react": "^18.2.6",
+    "react": "^18.2.0",
+    "react-native": "^0.71.8",
+    "react-native-builder-bob": "^0.20.4",
+    "react-native-test-app": "^2.5.2",
+    "react-native-webview": "^12.0.2",
+    "typescript": "^5.0.4"
+  },
+  "files": [
+    "lib",
+    "src"
+  ],
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "crypto-js": "3.3.0",
+    "search-params": "^4.0.1"
+  }
+}

@@ -1,9 +1,15 @@
-# nimbbl-react-native-sdk
+# Nimbbl React Native SDK
+
+A simple react native checkout integration package.
+
+This branch contains the rewritten codes for the SDK aimed at the older react-native version.
+
 
 ## Requirements
 
 - [Node.js](https://nodejs.org/) v14.20.0 with [Corepack](https://nodejs.org/api/corepack.html) (`$ corepack enable`)
 - [VS Code](https://code.visualstudio.com/) editor
+
 
 ## Getting Started
 

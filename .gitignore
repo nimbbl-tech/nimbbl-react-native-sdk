@@ -1,0 +1,8 @@
+# node.js
+node_modules
+
+# build folder
+lib/
+
+# tgz file
+nimbbl_react_native_sdk-*.tgz
