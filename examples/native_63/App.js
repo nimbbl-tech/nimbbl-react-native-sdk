@@ -1,7 +1,7 @@
-import AES from 'crypto-js/aes';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
+  NativeModules,
   StatusBar,
   Text,
   useColorScheme,
@@ -13,6 +13,8 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { NativeSdk } from 'nimbbl_react_native_sdk';
 
 import { dependencies } from './package.json';
+
+const { NimbblUPIHelperModule } = NativeModules;
 
 const environments = ['prod', 'pp', 'qa3', 'qa1', 'qa2'];
 
@@ -99,6 +101,19 @@ const App = () => {
     react,
     'react-native-webview': reactNativeWebview,
   } = dependencies;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await NimbblUPIHelperModule.sendUpiIntents();
+        console.log('NimbblUPIHelperModule', res);
+      } catch (e) {
+        console.log('error', e);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const createOrder = async () => {
     const tokenResponse = await fetch(
