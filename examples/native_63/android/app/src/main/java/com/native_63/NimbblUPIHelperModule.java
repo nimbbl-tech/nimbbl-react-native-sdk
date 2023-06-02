@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Base64;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -19,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +59,6 @@ public class NimbblUPIHelperModule extends ReactContextBaseJavaModule {
         mainIntent.setData(uri1);
         List<ResolveInfo> pkgAppsList= packageManager.queryIntentActivities(mainIntent, 0);
 
-        ArrayList<UpiAppVo> appListCol = new ArrayList();
 
         JSONArray jsonArray = new JSONArray();
 
@@ -64,11 +68,11 @@ public class NimbblUPIHelperModule extends ReactContextBaseJavaModule {
                 try {
                     apssObj.put("name", resolveInfo.loadLabel(packageManager).toString());
                     apssObj.put("packagename", resolveInfo.activityInfo.packageName);
+                    Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),resolveInfo.activityInfo.getIconResource());
+                    apssObj.put("appiconbase64",encodeToBase64(bitmap, Bitmap.CompressFormat.PNG, 100));
                     jsonArray.put(apssObj);
-                    appListCol.add(new UpiAppVo(resolveInfo.activityInfo.packageName, resolveInfo.loadIcon(packageManager), resolveInfo.loadLabel(packageManager).toString()));
-
                     JSONObject mainobj = new JSONObject().put("UPIApps", jsonArray);
-
+                    Log.d("SAN",mainobj.toString());
                     promise.resolve(mainobj);
                 } catch (JSONException e) {
                     promise.reject("error from android native", e);
@@ -84,30 +88,8 @@ public class NimbblUPIHelperModule extends ReactContextBaseJavaModule {
                 promise.reject("error from android native", e);
                 throw new RuntimeException(e);
             }
-
-
         }
 
-
-   /*     String json = "{\n" +
-                "  \"UPIApps\": [\n" +
-                "    {\n" +
-                "      \"name\": \"gpay\",\n" +
-                "      \"packagename\": \"com.google.android.apps.nbu.paisa.user\"\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"name\": \"phonepay\",\n" +
-                "      \"packagename\": \"com.phonepe.app\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}";
-
-
-        try {
-            promise.resolve(json);
-        } catch(Exception e) {
-            promise.reject("error from android native", e);
-        }    */
     }
 
     @ReactMethod
@@ -174,5 +156,12 @@ public class NimbblUPIHelperModule extends ReactContextBaseJavaModule {
     @Override
     public String getName() {
         return "NimbblUPIHelperModule";
+    }
+
+    public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality)
+    {
+        ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+        image.compress(compressFormat, quality, byteArrayOS);
+        return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
     }
 }

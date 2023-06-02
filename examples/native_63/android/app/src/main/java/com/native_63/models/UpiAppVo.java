@@ -4,12 +4,12 @@ import android.graphics.drawable.Drawable;
 
 public class UpiAppVo {
     String packagename;
-    Drawable image;
+    Sting appIconBase64;
     String name;
 
-    public UpiAppVo(String packageName, Drawable loadIcon, String toString) {
+    public UpiAppVo(String packageName, String loadIcon, String toString) {
         this.packagename = packageName;
-        this.image= loadIcon;
+        this.appIconBase64= loadIcon;
         this.name = toString;
     }
 }
