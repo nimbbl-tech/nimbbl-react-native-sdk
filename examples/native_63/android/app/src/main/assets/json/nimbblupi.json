@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Amazon Pay",
+    "package_name": "in.amazon.mShop.android.shopping",
+    "upi_app_code": "amazon_pay",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/amzpayupi_v2.png"
+  },
+  {
+    "name": "Cred",
+    "package_name": "com.dreamplug.androidapp",
+    "upi_app_code": "cred",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/credupi_v1.png"
+  },
+  {
+    "name": "BHIM",
+    "package_name": "in.org.npci.upiapp",
+    "upi_app_code": "bhim",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/bhim_v2.png"
+  },
+  {
+    "name": "PhonePe",
+    "package_name": "com.phonepe.app",
+    "upi_app_code": "phonepe",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/phonepeupi_v2.png"
+  },
+  {
+    "name": "Google Pay",
+    "package_name": "com.google.android.apps.nbu.paisa.user",
+    "upi_app_code": "google_pay",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/gpay_v2.png"
+  },
+  {
+    "name": "PayTM",
+    "package_name": "net.one97.paytm",
+    "upi_app_code": "paytm",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/paytmupi_v9.png"
+  },
+  {
+    "name": "Jupiter Money",
+    "package_name": "money.jupiter",
+    "upi_app_code": "jupiter",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/jupiter_v1.png"
+  },
+  {
+    "name": "WhatsApp",
+    "package_name": "com.whatsapp",
+    "upi_app_code": "whatsapp",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/whatsapp_v1.png"
+  },
+  {
+    "name": "Freecharge",
+    "package_name": "com.freecharge.android",
+    "upi_app_code": "freecharge",
+    "logo_url": "https://s3.ap-south-1.amazonaws.com/nimbbl/upi/freecharge_v1.webp"
+  },
+  {
+    "name": "Mobikwik",
+    "package_name": "com.mobikwik_new",
+    "upi_app_code": "mobikwik",
+    "logo_url": ""
+  }
+]

@@ -1,15 +1,10 @@
 package com.native_63.models;
 
-import android.graphics.drawable.Drawable;
 
 public class UpiAppVo {
-    String packagename;
-    Drawable image;
-    String name;
+    public String name;
+    public String package_name;
+    public String upi_app_code;
+    public String logo_url;
 
-    public UpiAppVo(String packageName, Drawable loadIcon, String toString) {
-        this.packagename = packageName;
-        this.image= loadIcon;
-        this.name = toString;
-    }
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.react.bridge.ActivityEventListener;
@@ -17,12 +18,16 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableArray;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.native_63.models.UpiAppVo;
+import com.native_63.utility.Utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,23 +62,31 @@ public class NimbblUPIHelperModule extends ReactContextBaseJavaModule {
         Uri uri1 = new Uri.Builder().scheme("upi").authority("pay").build();
         mainIntent.setData(uri1);
         List<ResolveInfo> pkgAppsList= packageManager.queryIntentActivities(mainIntent, 0);
+        ArrayList<UpiAppVo> appListCol = new ArrayList<>();
 
-        ArrayList<UpiAppVo> appListCol = new ArrayList();
-
-        WritableArray jsonArray = new WritableNativeArray();
-
-        if(pkgAppsList.size()>0) {
-            for (ResolveInfo resolveInfo : pkgAppsList) {
-                WritableMap appObject = new WritableNativeMap();
-                
-                appObject.putString("name", resolveInfo.loadLabel(packageManager).toString());
-                appObject.putString("packagename", resolveInfo.activityInfo.packageName);
-                jsonArray.pushMap(appObject);
-
-                appListCol.add(new UpiAppVo(resolveInfo.activityInfo.packageName, resolveInfo.loadIcon(packageManager), resolveInfo.loadLabel(packageManager).toString()));
+        Gson gson = new Gson();
+        try {
+            String  referencedJsonString =Utility.loadJSONFromAsset(context,"json/nimbblupi.json");
+            Type type = new TypeToken<List<UpiAppVo>>(){}.getType();
+            List<UpiAppVo> refUPIJsonArray = gson.fromJson(referencedJsonString, type);
+            for(UpiAppVo refUpiApp: refUPIJsonArray){
+                Log.d("SAN",refUpiApp.package_name);
             }
+            if(pkgAppsList.size()>0) {
+                for (ResolveInfo resolveInfo : pkgAppsList) {
+                    for(UpiAppVo refUpiApp: refUPIJsonArray){
+                        if(resolveInfo.activityInfo.packageName.equalsIgnoreCase(refUpiApp.package_name)) {
+                            appListCol.add(refUpiApp);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        promise.resolve(jsonArray);
+
+        promise.resolve(gson.toJson(appListCol));
     }
 
     @ReactMethod
@@ -123,6 +136,8 @@ public class NimbblUPIHelperModule extends ReactContextBaseJavaModule {
 
         }
     };
+
+
 
     @Override
     public String getName() {
