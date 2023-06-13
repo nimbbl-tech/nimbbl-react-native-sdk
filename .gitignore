@@ -6,3 +6,7 @@ lib/
 
 # tgz file
 nimbbl_react_native_sdk-*.tgz
+
+# Android
+.gradle
+local.properties

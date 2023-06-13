@@ -1,3 +1,4 @@
-import NativeSdk from './NativeSdk';
+import NimbblReactNative from './NimbblReactNative';
+import getListOfUpiIntent from './Upi';
 
-export { NativeSdk };
+export { NimbblReactNative, getListOfUpiIntent };

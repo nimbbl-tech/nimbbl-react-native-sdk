@@ -1,39 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Modal, useWindowDimensions } from 'react-native';
 import WebView from 'react-native-webview';
 import { parse } from 'search-params';
 
 import { Environments, getUrls } from './constants/Urls';
-import { decryptResponse, encryptBody } from './utils/crypto';
+import { decryptResponse } from './utils/crypto';
 import ReasonPopup from './ReasonPopup';
+import getListOfUpiIntent from './Upi';
 
-const fetchOrders = async (
+const updateOrder = async (
   params: Pick<
-    NativeSdkProps,
-    'accessKey' | 'accessSecret' | 'orderId' | 'environment' | 'callback_url'
+    NimbblReactNativeProps,
+    'orderId' | 'environment' | 'callback_url'
   >
 ) => {
-  const {
-    accessKey,
-    accessSecret,
-    environment = 'prod',
-    orderId,
-    callback_url,
-  } = params;
-  console.log('fetchOrders', environment);
-
-  const tokenRes = await fetch(getUrls(environment).egt, {
-    method: 'POST',
-    body: encryptBody({
-      access_key: accessKey,
-      access_secret: accessSecret,
-      order_id: orderId,
-    }),
-  });
-  console.log('token res', tokenRes);
-  const tokenData = await tokenRes.json();
-  const { token = '' } = tokenData || {};
-  console.log('token data', tokenData);
+  const { environment = 'prod', orderId, callback_url } = params;
 
   await fetch(getUrls(environment).updateOrder + orderId, {
     method: 'PUT',
@@ -44,22 +25,21 @@ const fetchOrders = async (
   });
 };
 
-interface NativeSdkProps {
-  show: boolean;
+interface NimbblReactNativeProps {
+  // required
   accessKey: string;
-  accessSecret?: string;
+  show: boolean;
   orderId: string;
-  host: string;
-  environment?: Environments;
   callback_url: string;
   onClose: (data: any) => void;
+
+  // optional
+  environment?: Environments;
 }
 
-const NativeSdk = (props: NativeSdkProps) => {
+const NimbblReactNative = (props: NimbblReactNativeProps) => {
   const {
     accessKey,
-    accessSecret,
-    host,
     environment = 'prod',
     onClose,
     orderId,
@@ -71,7 +51,7 @@ const NativeSdk = (props: NativeSdkProps) => {
   const height = useWindowDimensions().height;
 
   const [showReason, setShowReason] = useState(false);
-  // const [order, setOrder] = useState<any>(null);
+  const webviewRef = useRef<WebView>(null);
 
   const hideReason = () => setShowReason(false);
 
@@ -96,24 +76,32 @@ const NativeSdk = (props: NativeSdkProps) => {
   };
 
   useEffect(() => {
+    const getApps = async () => {
+      const upiApps = await getListOfUpiIntent();
+      console.log('List of UPI apps:', JSON.stringify(upiApps, null, 2));
+
+      console.log('sending postMessage to checkout');
+      webviewRef.current?.postMessage(JSON.stringify(upiApps));
+    };
+
+    getApps();
+  }, []);
+
+  useEffect(() => {
     if (show) {
-      fetchOrders({
-        accessKey,
+      updateOrder({
         orderId,
-        accessSecret: accessSecret || '',
         environment,
         callback_url,
       });
-      // .then((data) => {
-      //   setOrder(data);
-      // });
     }
-  }, [accessKey, orderId, show, environment, callback_url]);
+  }, [orderId, show, environment, callback_url]);
 
-  console.log('env', environment);
+  const { checkoutParams, host } = getUrls(environment);
+  const url = host + checkoutParams + orderId;
+  // + '&resource=' + accessKey;
 
-  const url = host + getUrls(environment).checkoutParams + orderId;
-
+  console.log('environment:', environment);
   return (
     <Modal
       style={{ width, height }}
@@ -140,6 +128,7 @@ const NativeSdk = (props: NativeSdkProps) => {
         );
       }}>
       <WebView
+        ref={webviewRef}
         style={{
           backgroundColor: '#fff',
           width,
@@ -178,4 +167,4 @@ const NativeSdk = (props: NativeSdkProps) => {
   );
 };
 
-export default NativeSdk;
+export default NimbblReactNative;
