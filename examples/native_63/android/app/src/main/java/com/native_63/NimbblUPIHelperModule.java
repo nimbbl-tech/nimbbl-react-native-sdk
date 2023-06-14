@@ -69,9 +69,9 @@ public class NimbblUPIHelperModule extends ReactContextBaseJavaModule {
             String  referencedJsonString =Utility.loadJSONFromAsset(context,"json/nimbblupi.json");
             Type type = new TypeToken<List<UpiAppVo>>(){}.getType();
             List<UpiAppVo> refUPIJsonArray = gson.fromJson(referencedJsonString, type);
-            for(UpiAppVo refUpiApp: refUPIJsonArray){
+        /*    for(UpiAppVo refUpiApp: refUPIJsonArray){
                 Log.d("SAN",refUpiApp.package_name);
-            }
+            }*/
             if(pkgAppsList.size()>0) {
                 for (ResolveInfo resolveInfo : pkgAppsList) {
                     for(UpiAppVo refUpiApp: refUPIJsonArray){
