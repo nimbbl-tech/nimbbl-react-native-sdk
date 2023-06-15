@@ -1,94 +1,30 @@
-import AES from 'crypto-js/aes';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   StatusBar,
-  Text,
-  useColorScheme,
-  View,
   Switch,
+  Text,
+  View,
+  useColorScheme,
 } from 'react-native';
-
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { NativeSdk } from 'nimbbl_react_native_sdk';
+import { NimbblReactNative, getListOfUpiIntent } from 'nimbbl_react_native_sdk';
 
+import {
+  apiHost,
+  checkoutHost,
+  environments,
+  productDetails,
+} from './constants';
 import { dependencies } from './package.json';
-
-const environments = ['prod', 'pp', 'qa3', 'qa1', 'qa2'];
-
-const apiHost = {
-  pp: 'https://apipp.nimbbl.tech/',
-  prod: 'https://api.nimbbl.tech/',
-  qa1: 'https://qa1api.nimbbl.tech/',
-  qa2: 'https://qa2api.nimbbl.tech/',
-  qa3: 'https://qa3api.nimbbl.tech/',
-};
-
-const checkoutHost = {
-  pp: 'https://checkoutpp.nimbbl.tech/',
-  prod: 'https://checkout.nimbbl.tech/',
-  qa1: 'https://qa1checkout.nimbbl.tech/',
-  qa2: 'https://qa2checkout.nimbbl.tech/',
-  qa3: 'https://qa3checkout.nimbbl.tech/',
-};
-
-const productDetails = {
-  amount_before_tax: 2.0,
-  tax: 0,
-  total_amount: 3.0,
-  user: {
-    email: 'abc@gmail.com',
-    first_name: 'abc',
-    last_name: null,
-    country_code: '+91',
-    mobile_number: '9004229994',
-  },
-  shipping_address: {
-    street: 'L.N. Pappan Marg',
-    landmark: 'Dr E Moses Rd',
-    area: 'Worli',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    pincode: '400018',
-    address_type: 'residential',
-  },
-  currency: 'INR',
-  invoice_id: 'invoice_Ava' + Math.random(),
-  referrer_platform: '',
-  referrer_platform_identifer: '',
-  order_line_items: [
-    {
-      sku_id: 'sku1',
-      title: 'Burger',
-      description: 'maharaja MaC',
-      quantity: '1',
-      rate: 1,
-      amount_before_tax: '1',
-      tax: '1',
-      total_amount: '1',
-      image_url:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7Ay5KWSTviUsTHZ7m_-YJvOlPMwGhZIPuzobqynBqQbQP1_KWCuc8qlwREOiTP38Hs_fLTJYl&usqp=CAc',
-    },
-  ],
-  bank_account: {
-    account_number: '037801513988',
-    name: 'Vasudha Maini',
-    ifsc: 'ICIC0000378',
-  },
-  custom_attributes: {
-    Name: 'abc',
-    Place: 'Delhi',
-    Animal: 'Tiger',
-    Thing: 'Pen',
-  },
-};
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [showCheckout, setShowCheckout] = useState(false);
   const [response, setResponse] = useState('{}');
   const [orderId, setOrderId] = useState('');
-  const [environment, setEnvironment] = useState('qa1');
+  const [environment, setEnvironment] = useState('pp');
+  const [appLists, setAppLists] = useState(null);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -132,18 +68,27 @@ const App = () => {
   };
 
   const nativeSdkProps = {
+    // required
     show: showCheckout,
-    environment: environment,
-    orderId: orderId,
     access_key: 'access_key_81x7ByYkREmW205N',
-    access_secret: 'access_secret_ArL0OKDKBGx5A0zP',
-    callback_url: 'https://www.google.com/',
+    orderId: orderId,
+    callback_url: 'https://www.example.com/',
     host: checkoutHost[environment],
     onClose: (data) => {
       console.log('response: ', data);
       setResponse(data);
       setShowCheckout(false);
     },
+
+    // optional
+    environment: environment,
+  };
+
+  const getApps = async () => {
+    const result = await getListOfUpiIntent();
+    const apps = result?.UPIApps || [];
+
+    setAppLists(apps);
   };
 
   console.log(nativeSdkProps);
@@ -212,6 +157,20 @@ const App = () => {
           })}
         </View>
 
+        <Button title="Show available upi apps" onPress={getApps} />
+
+        <View style={{ marginVertical: 8 }}>
+          {Array.isArray(appLists) ? (
+            appLists?.length > 0 ? (
+              appLists?.map((app) => <Text key={app.name}>{app.name}</Text>)
+            ) : (
+              <Text>No upi apps found</Text>
+            )
+          ) : (
+            <></>
+          )}
+        </View>
+
         <Button title="Create Order" onPress={createOrder} />
 
         <Text style={{ marginVertical: 8 }}>OrderId: {orderId}</Text>
@@ -229,7 +188,7 @@ const App = () => {
         </Text>
       </View>
 
-      <NativeSdk {...nativeSdkProps} />
+      <NimbblReactNative {...nativeSdkProps} />
     </>
   );
 };

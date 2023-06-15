@@ -31,7 +31,7 @@ const ReasonPopup = (props: ReasonPopupProps) => {
   const [selectedReason, setSelectedReason] = useState('');
 
   const updateOrder = async () => {
-    await fetch(getUrls(environment).egt + orderId, {
+    await fetch(getUrls(environment).updateOrder + orderId, {
       method: 'PUT',
       body: JSON.stringify({
         cancellation_reason: selectedReason,
