@@ -44,7 +44,13 @@
   },
   "files": [
     "lib",
-    "src"
+    "src",
+    "android",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties"
   ],
   "react-native-builder-bob": {
     "source": "src",
@@ -62,7 +68,6 @@
   },
   "dependencies": {
     "buffer": "^6.0.3",
-    "crypto-js": "3.3.0",
     "search-params": "^4.0.1"
   }
 }
