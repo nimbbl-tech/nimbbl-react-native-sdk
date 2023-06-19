@@ -8,7 +8,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { NimbblReactNative, getListOfUpiIntent } from 'nimbbl_react_native_sdk';
+import { NimbblReactNative, getListOfUpiIntent } from 'nimbbl-react-native';
 
 import {
   apiHost,

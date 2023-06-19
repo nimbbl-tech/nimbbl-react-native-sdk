@@ -3,18 +3,15 @@ import { Alert, Modal, useWindowDimensions } from 'react-native';
 import WebView from 'react-native-webview';
 import { parse } from 'search-params';
 
-import { Environments, getUrls } from './constants/Urls';
+import { Environments, callback_url, getUrls } from './constants/Urls';
 import { decryptResponse } from './utils/crypto';
 import ReasonPopup from './ReasonPopup';
-import getListOfUpiIntent from './Upi';
+import getListOfUpiIntent, { AppDetails } from './Upi';
 
 const updateOrder = async (
-  params: Pick<
-    NimbblReactNativeProps,
-    'orderId' | 'environment' | 'callback_url'
-  >
+  params: Pick<NimbblReactNativeProps, 'orderId' | 'environment'>
 ) => {
-  const { environment = 'prod', orderId, callback_url } = params;
+  const { environment = 'prod', orderId } = params;
 
   await fetch(getUrls(environment).updateOrder + orderId, {
     method: 'PUT',
@@ -30,7 +27,6 @@ interface NimbblReactNativeProps {
   accessKey: string;
   show: boolean;
   orderId: string;
-  callback_url: string;
   onClose: (data: any) => void;
 
   // optional
@@ -38,18 +34,12 @@ interface NimbblReactNativeProps {
 }
 
 const NimbblReactNative = (props: NimbblReactNativeProps) => {
-  const {
-    accessKey,
-    environment = 'prod',
-    onClose,
-    orderId,
-    show,
-    callback_url,
-  } = props;
+  const { accessKey, environment = 'prod', onClose, orderId, show } = props;
 
   const width = useWindowDimensions().width;
   const height = useWindowDimensions().height;
 
+  const [upiAppList, setUpiAppList] = useState<AppDetails[]>([]);
   const [showReason, setShowReason] = useState(false);
   const webviewRef = useRef<WebView>(null);
 
@@ -80,30 +70,37 @@ const NimbblReactNative = (props: NimbblReactNativeProps) => {
       const upiApps = await getListOfUpiIntent();
       console.log('List of UPI apps:', JSON.stringify(upiApps, null, 2));
 
-      console.log('sending postMessage to checkout');
-      webviewRef.current?.postMessage(JSON.stringify(upiApps));
+      setUpiAppList(upiApps.UPIApps ?? []);
     };
 
-    if (show) {
-      getApps();
-    }
-  }, [show]);
+    getApps();
+  }, []);
 
   useEffect(() => {
     if (show) {
       updateOrder({
         orderId,
         environment,
-        callback_url,
       });
     }
-  }, [orderId, show, environment, callback_url]);
+  }, [orderId, show, environment]);
 
   const { checkoutParams, host } = getUrls(environment);
   const url = host + checkoutParams + orderId;
   // + '&resource=' + accessKey;
 
   console.log('environment:', environment);
+
+  // { UPIApps: [] }
+
+  const injectJavascript = `
+    window.nimbbl_webview = {
+      isNative: true,
+      UPIIntentAvailable: ${JSON.stringify(upiAppList)},
+    };
+    true;
+  `;
+
   return (
     <Modal
       style={{ width, height }}
@@ -141,6 +138,7 @@ const NimbblReactNative = (props: NimbblReactNativeProps) => {
         mixedContentMode='compatibility'
         javaScriptCanOpenWindowsAutomatically={true}
         setSupportMultipleWindows={false}
+        injectedJavaScript={injectJavascript}
         onNavigationStateChange={(e) => {
           const responseURL = e.url;
 

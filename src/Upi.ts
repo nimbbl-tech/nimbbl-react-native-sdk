@@ -8,7 +8,7 @@ const { NimbblUpiIntent } = NativeModules;
 //   { name: 'PhonePe', packageName: 'com.phonepe.app' }
 // ];
 
-interface AppDetails {
+export interface AppDetails {
   name: string;
   package_name: string;
   upi_app_code: string;

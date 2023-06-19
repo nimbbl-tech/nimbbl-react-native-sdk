@@ -35,6 +35,8 @@ import java.util.List;
 public class NimbblUpiIntentModule extends ReactContextBaseJavaModule {
   public static final String NAME = "NimbblUpiIntent";
   ReactApplicationContext context;
+  private Promise mPickerPromise;
+  private static final int UPI_PICKER_REQUEST = 1;
 
   public NimbblUpiIntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
