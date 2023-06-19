@@ -24,3 +24,5 @@ export const getUrls = (environment: Environments) => ({
   checkoutParams: '?modal=false&order_id=',
   host: checkoutHost[environment],
 });
+
+export const callback_url = 'https://shop.nimbbl.tech/thank-you';
