@@ -5,13 +5,13 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "npm i ../../nimbbl-react-native-2.0.0.tgz && react-native start --reset-cache",
+    "start": "react-native start --reset-cache",
     "test": "jest",
     "lint": "eslint ."
   },
   "dependencies": {
     "crypto-js": "^3.3.0",
-    "nimbbl-react-native": "file:../../nimbbl-react-native-2.0.0.tgz",
+    "nimbbl-react-native": "^3.0.0",
     "react": "16.13.1",
     "react-native": "0.63.5",
     "react-native-webview": "10.10.2"

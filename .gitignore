@@ -5,4 +5,4 @@ node_modules
 lib/
 
 # tgz file
-nimbbl_react_native_sdk-*.tgz
+nimbbl-react-native-*.tgz
