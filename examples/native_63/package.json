@@ -5,13 +5,17 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start --reset-cache",
+    "start": "npm i ../../nimbbl_react_native_sdk-3.0.1.tgz && react-native start --reset-cache",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "clean:android": "cd ./android && ./gradlew clean",
+    "prebuild": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
+    "build:android": "cd ./android && ./gradlew assembleRelease -x bundleReleaseJsAndAssets",
+    "build:app": "npm run prebuild && npm run clean:android && npm run build:android"
   },
   "dependencies": {
     "crypto-js": "^3.3.0",
-    "nimbbl-react-native": "^3.0.0",
+    "nimbbl_react_native_sdk": "file:../../nimbbl_react_native_sdk-3.0.1.tgz",
     "react": "16.13.1",
     "react-native": "0.63.5",
     "react-native-webview": "10.10.2"
@@ -24,6 +28,7 @@
     "eslint": "^6.5.1",
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.59.0",
+    "react-devtools": "^4.28.0",
     "react-test-renderer": "16.13.1"
   },
   "jest": {

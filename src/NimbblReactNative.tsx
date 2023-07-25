@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Modal, useWindowDimensions } from 'react-native';
-import WebView from 'react-native-webview';
+import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { parse } from 'search-params';
 
-import { Environments, callback_url, getUrls } from './constants/Urls';
+import { callback_url, getUrls } from './constants/Urls';
 import { decryptResponse } from './utils/crypto';
 import ReasonPopup from './ReasonPopup';
-import getListOfUpiIntent, { AppDetails } from './Upi';
+import { AppDetails, getListOfUpiIntent, openUpiApp } from './Upi';
+import getEnforcedUrl from './utils/getEnforcedUrl';
+import { NimbblReactNativeProps } from './NimbblReactNativeProps';
 
 const updateOrder = async (
   params: Pick<NimbblReactNativeProps, 'orderId' | 'environment'>
@@ -22,19 +24,20 @@ const updateOrder = async (
   });
 };
 
-interface NimbblReactNativeProps {
-  // required
-  accessKey: string;
-  show: boolean;
-  orderId: string;
-  onClose: (data: any) => void;
-
-  // optional
-  environment?: Environments;
-}
-
 const NimbblReactNative = (props: NimbblReactNativeProps) => {
-  const { accessKey, environment = 'prod', onClose, orderId, show } = props;
+  const {
+    accessKey,
+    upi_app_code,
+    bank_code,
+    environment = 'prod',
+    orderId,
+    payment_flow,
+    payment_mode_code,
+    show,
+    wallet_code,
+    upi_id,
+    onClose,
+  } = props;
 
   const width = useWindowDimensions().width;
   const height = useWindowDimensions().height;
@@ -65,6 +68,25 @@ const NimbblReactNative = (props: NimbblReactNativeProps) => {
     }
   };
 
+  const onMessage = async (event: WebViewMessageEvent) => {
+    const data = JSON.parse(event.nativeEvent.data);
+    const { package_name, url } = data || {};
+
+    console.log('data', { package_name, url });
+
+    if (!package_name) throw Error('Package Name is required but is not found');
+    if (!url) throw Error('Payment Url is required but is not found');
+
+    const status = await openUpiApp({ package_name, url });
+    webviewRef.current?.postMessage(status);
+
+    // if(status === 'cancelled') {
+
+    // }
+
+    console.log('status', status);
+  };
+
   useEffect(() => {
     const getApps = async () => {
       const upiApps = await getListOfUpiIntent();
@@ -87,11 +109,18 @@ const NimbblReactNative = (props: NimbblReactNativeProps) => {
 
   const { checkoutParams, host } = getUrls(environment);
   const url = host + checkoutParams + orderId;
-  // + '&resource=' + accessKey;
+  const enforcedUrl = getEnforcedUrl({
+    upi_app_code,
+    bank_code,
+    payment_flow,
+    payment_mode_code,
+    url,
+    wallet_code,
+    upi_id,
+  });
 
+  console.log('enforcedUrl:', enforcedUrl);
   console.log('environment:', environment);
-
-  // { UPIApps: [] }
 
   const injectJavascript = `
     window.nimbbl_webview = {
@@ -100,6 +129,8 @@ const NimbblReactNative = (props: NimbblReactNativeProps) => {
     };
     true;
   `;
+
+  console.log('injectedJs', injectJavascript);
 
   return (
     <Modal
@@ -134,13 +165,16 @@ const NimbblReactNative = (props: NimbblReactNativeProps) => {
           height,
         }}
         startInLoadingState={false}
-        source={{ uri: url }}
+        source={{ uri: enforcedUrl }}
         mixedContentMode='compatibility'
         javaScriptCanOpenWindowsAutomatically={true}
         setSupportMultipleWindows={false}
         injectedJavaScript={injectJavascript}
+        injectedJavaScriptBeforeContentLoaded={injectJavascript}
+        onMessage={onMessage}
         onNavigationStateChange={(e) => {
           const responseURL = e.url;
+          console.log('webview url', responseURL);
 
           if (callback_url && responseURL.includes(callback_url)) {
             const queryParams = parse(responseURL);

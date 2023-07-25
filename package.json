@@ -1,6 +1,6 @@
 {
-  "name": "nimbbl-react-native",
-  "version": "3.0.0",
+  "name": "nimbbl_react_native_sdk",
+  "version": "3.1.0",
   "description": "A simple react native checkout integration package.",
   "author": "Bigital Technologies",
   "license": "ISC",

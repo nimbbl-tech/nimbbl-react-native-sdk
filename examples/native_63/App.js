@@ -8,7 +8,11 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { NimbblReactNative, getListOfUpiIntent } from 'nimbbl-react-native';
+import {
+  NimbblReactNative,
+  getListOfUpiIntent,
+  // openUpiApp,
+} from 'nimbbl-react-native';
 
 import {
   apiHost,
@@ -79,7 +83,22 @@ const App = () => {
       setResponse(data);
       setShowCheckout(false);
     },
+    // net banking
+    // payment_mode_code: 'net_banking',
+    // bank_code: 'sbi',
 
+    // card
+    // payment_mode_code: 'card',
+
+    // wallet
+    // payment_mode_code: 'wallet',
+    // wallet_code: 'phonepe',
+
+    // upi
+    payment_mode_code: 'upi',
+    payment_flow: 'collect',
+    upi_id: 'pikuafk@pingpay',
+    // upi_app_code: 'phonepe',
     // optional
     environment: environment,
   };
@@ -90,6 +109,16 @@ const App = () => {
 
     setAppLists(apps);
   };
+
+  // const openApp = async () => {
+  //   const appData = {
+  //     package_name: 'com.phonepe.app',
+  //     url: 'upi://pay?pa=shopnimbbltech.payu@indus&pn=Bigital+Technologies+Pvt+ltd&tr=17635538667&am=3.00&cu=INR&tn=UPI+Transaction+for+PPPL17635538667290623175139',
+  //   };
+
+  //   const status = await openUpiApp(appData);
+  //   console.log('status', status);
+  // };
 
   console.log(nativeSdkProps);
 
@@ -174,6 +203,8 @@ const App = () => {
         <Button title="Create Order" onPress={createOrder} />
 
         <Text style={{ marginVertical: 8 }}>OrderId: {orderId}</Text>
+
+        {/* <Button title="Open App" onPress={openApp} /> */}
 
         <Button
           disabled={!orderId}

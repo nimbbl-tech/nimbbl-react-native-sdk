@@ -4,7 +4,6 @@ const { NimbblUpiIntent } = NativeModules;
 
 // sample response
 // [
-//   { name: 'Samsung Pay Mini', packageName: 'com.samsung.android.spaymini' },
 //   { name: 'PhonePe', packageName: 'com.phonepe.app' }
 // ];
 
@@ -13,6 +12,11 @@ export interface AppDetails {
   package_name: string;
   upi_app_code: string;
   logo_url: string;
+}
+
+interface AppParams {
+  package_name: string;
+  url: string;
 }
 
 /**
@@ -25,4 +29,12 @@ const getListOfUpiIntent = async (): Promise<{ UPIApps: AppDetails[] }> => {
   return { UPIApps };
 };
 
-export default getListOfUpiIntent;
+/**
+ * takes `package_name` and `url` as input and opens the specified upi app for payment
+ * @returns `success` | `failed`
+ */
+const openUpiApp = async (appParams: AppParams): Promise<string> => {
+  return await NimbblUpiIntent.openUpiApp(JSON.stringify(appParams));
+};
+
+export { getListOfUpiIntent, openUpiApp };

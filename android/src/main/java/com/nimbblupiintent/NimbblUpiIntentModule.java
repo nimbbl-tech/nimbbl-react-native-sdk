@@ -41,6 +41,7 @@ public class NimbblUpiIntentModule extends ReactContextBaseJavaModule {
   public NimbblUpiIntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.context =  reactContext;
+    context.addActivityEventListener(mActivityEventListener);
   }
 
   @Override
@@ -127,7 +128,14 @@ public class NimbblUpiIntentModule extends ReactContextBaseJavaModule {
               if (intent.getData() != null) {
                 strStatus = intent.getStringExtra("Status").toString();
               }
-              mPickerPromise.resolve(intent.getStringExtra ("Status"));
+              // mPickerPromise.resolve(intent.getStringExtra("Status").toString());
+              if(strStatus.equalsIgnoreCase("failure")) {
+                mPickerPromise.resolve("failure");  
+              } else  if(strStatus.equalsIgnoreCase("success")) {
+                mPickerPromise.resolve("success");
+              } else {
+                mPickerPromise.resolve("close");
+              }
             }
           }
 
